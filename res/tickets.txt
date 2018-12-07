@@ -1,0 +1,4 @@
+1;Normal;30;60
+2;Student;15;30
+3;Kid;10;20
+4;Family;12;24
