@@ -39,6 +39,78 @@ load_files () {
 	
 }
 
+# make_payment price type
+make_payment () {
+
+	case $2 in
+
+		1) ## by card
+			
+			echo "Loading terminal, please wait..."
+
+			sleep 5s
+
+			echo "Overall price $1"
+			read -p "Enter PIN: " PIN
+
+			failed=0
+			check=false
+
+			while [ "$check" = false ]
+			do
+				if [ "$PIN" = "1234" ]
+				then
+					echo "Correct PIN, performing payment..."
+					sleep 3s
+					echo "Connecting with your bank..."
+					sleep 3s
+					echo "Receiving response..."
+					sleep 5s
+					echo "Payment successful"
+
+					check=true
+				else
+					echo "Incorrect PIN - try again"
+					let failed=$failed+1
+
+					if [ "$failed" = "3" ]
+					then
+						echo "Too many failed attempts, goodbye!"
+						exit
+					fi
+				fi
+
+			done
+
+		2) ## by cash
+
+			sum=$1
+			while [ "$sum" > "0" ]
+			do
+				clear
+
+				echo "Price left to pay: $sum"
+
+				echo "Insert coin: "
+				echo "1. 1gr"
+				echo "2. 2gr"
+				echo "3. 5gr"
+				echo "4. 10gr"
+				echo "5. 20gr"
+				echo "6. 50gr"
+				echo "7. 1zł"
+				echo "8. 2zł"
+				echo "9. 5zł"
+				read -p "Your choice [1-9]: " coin
+
+				case coin in
+
+					1)
+						
+
+
+}
+
 # Load all necessary files
 load_files
 
