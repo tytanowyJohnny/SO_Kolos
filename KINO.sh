@@ -105,23 +105,33 @@ while true; do
 						break
 					fi	
 
+					clear
+
 					# Check if VIP
 					VIP_flag=0
-					while [ "$VIP_flag" = "0"]
+					while [ "$VIP_flag" = "0" ]
 					do
 						echo "Would you like normal or VIP tickets?"
 						read -p "Decision: [N/VIP]" VIP_flag
 
 						if [ "$VIP_flag" != "N" ] || [ "$VIP_flag" != "n"] || [ "$VIP_flag" != "VIP" ] || [ "$VIP_flag" != "vip" ]
 						then
-							
+							echo "Zły wybór! Spróbuj ponownie."
+							continue
+						fi
+					done
 
 					clear
 
 					# Maybe more than 1 ticket?
 					read -p "How many of them would you like to order?: " ticket_count
 
-					ticket_types+=( "$ticket_choice;$ticket_count" )
+					if [ "$VIP_flag" = "N" ] || [ "$VIP_flag" = "n" ]
+					then
+						ticket_types+=( "$ticket_choice;$ticket_count;0" )
+					else
+						ticket_types+=( "$ticket_choice;$ticket_count;1" )
+					fi
 
 					echo "Would you like to choose more ticket types?"
 					read -p "Decision [Y/N]: " check
@@ -180,6 +190,19 @@ while true; do
 				echo " 3.2 Capacity: $(cut -d ";" -f2 <<< "${rooms[$(( $room_choice-1 ))]}")"
 				echo " 3.3 Additional price: $(cut -d ";" -f3 <<< "${rooms[$(( $room_shoice-1 ))]}")"
 
+				# Show overall price
+				sum=0
+				for i in "${ticket_types[@]}"
+				do
+					if [ "$(cut -d ";" -f3 <<< "$i")" = "0" ]
+					then
+						let "sum+=$(( "$(cut -d ";" -f2 <<< "$i")" * "$(cut -d ";" -f3 <<< "${tickets[$(cut -d ";" -f1 <<< $i)]}")" ))"
+					else 
+						let "sum+=$(( $(cut -d ";" -f2 <<< "$i") * $(cut -d ";" -f4 <<< "${tickets[$(cut -d ";" -f1 <<< $i)]}") ))"
+					fi
+				done
+
+				echo "Overall price: $sum"
 			done
 			;;
 	esac
