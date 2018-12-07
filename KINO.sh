@@ -196,11 +196,13 @@ while true; do
 				do
 					if [ "$(cut -d ";" -f3 <<< "$i")" = "0" ]
 					then
-						let "sum+=$(( "$(cut -d ";" -f2 <<< "$i")" * "$(cut -d ";" -f3 <<< "${tickets[$(cut -d ";" -f1 <<< $i)]}")" ))"
+						let sum=$sum+"$(( "$(cut -d ";" -f2 <<< "$i")" * "$(cut -d ";" -f3 <<< "${tickets[$(( $(cut -d ";" -f1 <<< $i)-1 ))]}")" ))"
 					else 
-						let "sum+=$(( $(cut -d ";" -f2 <<< "$i") * $(cut -d ";" -f4 <<< "${tickets[$(cut -d ";" -f1 <<< $i)]}") ))"
+						let sum=$sum+"$(( $(cut -d ";" -f2 <<< "$i") * $(cut -d ";" -f4 <<< "${tickets[$(( $(cut -d ";" -f1 <<< $i)-1 ))]}") ))"
 					fi
 				done
+
+				let sum=$sum+"$(cut -d ";" -f3 <<< "${rooms[$(( $room-choice-1 ))]}")"
 
 				echo "Overall price: $sum"
 			done
