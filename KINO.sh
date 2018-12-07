@@ -42,9 +42,11 @@ load_files () {
 # make_payment price type
 make_payment () {
 
+	clear
+
 	case $2 in
 
-		1) ## by card
+		0) ## by card
 			
 			echo "Loading terminal, please wait..."
 
@@ -81,15 +83,14 @@ make_payment () {
 				fi
 
 			done
+			;;
 
-		2) ## by cash
+		1) ## by cash
 
 			sum=$1
 			while [ "$sum" > "0" ]
 			do
-				clear
-
-				echo "Price left to pay: $sum"
+				echo "Price left to pay: $sum zł"
 
 				echo "Insert coin: "
 				echo "1. 1gr"
@@ -103,11 +104,53 @@ make_payment () {
 				echo "9. 5zł"
 				read -p "Your choice [1-9]: " coin
 
-				case coin in
+				case $coin in
 
 					1)
-						
-
+						sum=$(echo "scale=2; $sum-0.01" | bc)
+						clear
+						;;
+					2)
+						sum=$(echo "scale=2; $sum-0.02" | bc)
+						clear
+						;;		
+					3)
+						sum=$(echo "scale=2; $sum-0.05" | bc)
+						clear
+						;;
+					4)
+						sum=$(echo "scale=2; $sum-0.1" | bc)
+						clear
+						;;	
+					5)
+						sum=$(echo "scale=2; $sum-0.2" | bc)
+						clear
+						;;		
+					6)
+						sum=$(echo "scale=2; $sum-0.5" | bc)
+						clear
+						;;										
+					7)
+						sum=$(echo "scale=2; $sum-1" | bc)
+						clear		
+						;;
+					8)
+						sum=$(echo "scale=2; $sum-2" | bc)
+						clear
+						;;
+					9)
+						sum=$(echo "scale=2; $sum-5" | bc)
+						clear
+						;;
+					*)
+						echo "Invalid coin, try again..."
+						sleep 2s
+						clear
+						;;
+				esac
+			done
+			;;
+		esac								
 
 }
 
@@ -138,7 +181,7 @@ while true; do
 				let counter=1
 				for i in "${movies[@]}"
 				do
-					echo "$counter. $(cut -d ";" -f2 <<< "$i")"
+					echo "$counter. $(cut -d ";" -f2 <<< "$i") $(cut -d ";" -f3 <<< "$i")"
 					((counter++))
 				done
 				echo "Enter 'q' to exit or 'r' to return to main menu"
@@ -204,6 +247,8 @@ while true; do
 					else
 						ticket_types+=( "$ticket_choice;$ticket_count;1" )
 					fi
+
+					clear
 
 					echo "Would you like to choose more ticket types?"
 					read -p "Decision [Y/N]: " check
@@ -277,6 +322,33 @@ while true; do
 				let sum=$sum+"$(cut -d ";" -f3 <<< "${rooms[$(( $room-choice-1 ))]}")"
 
 				echo "Overall price: $sum"
+
+				echo
+
+				payment=0
+				while [ "$payment" != "card" ] && [ "$payment" != "cash" ]
+				do
+					if [ "$payment" = "0" ]
+					then
+						read -p "Choose payment type [card/cash]: " payment
+					else
+						echo "Incorrect option, try again [card/cash]: " payment
+					fi
+				done
+
+				case $payment in
+
+					"card")
+
+						make_payment $sum 0
+						;;
+
+					"cash")
+						
+						make_payment $sum 1
+						;;
+				esac
+
 			done
 			;;
 	esac
